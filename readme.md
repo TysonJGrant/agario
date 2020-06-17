@@ -40,3 +40,7 @@ git remote - displays remote reposotories
 git remote add origin https://github.com/Tyson3206792/agario.git - adds origin as a remote repo to this
 
 git pull - update local files to reflect remote files
+
+==in json file for node==
+"start-local": "nodemon server.js" - call to run server locally
+"start": "node app.js" -           - called by heroku to start running. can also call "node app.js" to run locally
