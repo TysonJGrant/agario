@@ -33,4 +33,4 @@ then:
 git commit - opens vim editor. type change description. click esc to exit insert
 mode and type :wq to process commit
 
-git commit -m 'comment' - skips the editor stage and just commits with the comment 
+git commit -m "comment" - skips the editor stage and just commits with the comment 
