@@ -2,12 +2,14 @@ let Player = require('./Player.js');
 
 //const io = require('socket.io')(3000)  //for local
 //const io = require('socket.io')();
-var express = require('express'),
-    app = express(),
-    server = require('http').createServer(app),
-    io = require('socket.io').listen(server),
+const PORT = process.env.PORT || 3000;
+const INDEX = '/index.html';
 
-server.listen(process.env.PORT || 3000);
+const server = express()
+  .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
+  .listen(PORT, () => console.log(`Listening on ${PORT}`));
+
+const io = socketIO(server);
 
 const users = {}
 const w = 1000;
@@ -17,7 +19,7 @@ setInterval(function(){
   io.sockets.emit('update_game', users)
 }, 50);
 
-io.on('connection', socket => {
+io.on('connection', (socket) => {
   socket.on('new-user', name => {
     socket.broadcast.emit('user-connected', name);
     users[socket.id] = new Player(w, h);
