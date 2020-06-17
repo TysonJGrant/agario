@@ -1,6 +1,6 @@
 let Player = require('./Player.js');
 
-const io = require('socket.io')(3000) 
+const io = require('socket.io')
 
 const users = {}
 const w = 1000;
