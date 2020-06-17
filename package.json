@@ -4,8 +4,11 @@
   "description": "agario in node attempt",
   "main": "script.js",
   "dependencies": {
+    "bufferutil": "^4.0.1",
     "express": "^4.17.1",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.3.0",
+    "utf-8-validate": "^5.0.2",
+    "ws": "^7.3.0"
   },
   "devDependencies": {
     "node": "^14.4.0",
@@ -13,7 +16,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start-local": "node server.js",
+    "start-local": "nodemon server.js",
     "start": "node server.js"
   },
   "author": "",
