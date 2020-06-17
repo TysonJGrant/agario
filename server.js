@@ -1,7 +1,7 @@
 let Player = require('./Player.js');
 
 //const io = require('socket.io')(3000)  //for local
-//const io = require('socket.io')();
+var io = require('socket.io');
 var express = require("express");
 const PORT = process.env.PORT || 3000;
 const INDEX = '/index.html';
