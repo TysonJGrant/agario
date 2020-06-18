@@ -1,21 +1,36 @@
-let Player = require('./Player.js');
-const express = require('express');
-const socketIO = require('socket.io');
-const PORT = process.env.PORT || 3000;
-const INDEX = './index.html';
+//Add leadervoard
+//add food
+//add bots
 
-const server = express()
-  .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
-  .listen(PORT, () => console.log(`Listening on ${PORT}`));
+var Player = require('./Player.js');
+var local = true;
+var io;
 
-const io = socketIO(server);
+if(local){  //Manage when running locally
+  io = require('socket.io')(3000)  //for local
+}
+else{
+  const express = require('express');
+  const socketIO = require('socket.io');
+  const PORT = process.env.PORT || 3000;
+  const INDEX = './index.html';
 
-const users = {}
+  const server = express()
+    .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
+    .listen(PORT, () => console.log(`Listening on ${PORT}`));
+  io = socketIO(server);
+}
+
 const w = 1000;
 const h = 500;
+const users = {};
+const bots = {};
+const food = create_food();
 
 setInterval(function(){
-  io.sockets.emit('update_game', users)
+  update_food();
+  update_players();
+  io.sockets.emit('update_game', {users: users, food: food})
 }, 50);
 
 io.on('connection', (socket) => {
@@ -29,15 +44,47 @@ io.on('connection', (socket) => {
       users[socket.id].update_position(data);
   })
 
-
-
-
-
-
-
-
   socket.on('disconnect', () => {
     socket.broadcast.emit('user-disconnected', users[socket.id])
     delete users[socket.id]
   })
 })
+
+function update_food(){
+  Object.keys(users).forEach(function(key) {
+    player = users[key];
+    for(j = 0; j < food.length; j++){
+      xdist = Math.abs(player.xpos - food[j][0]);
+      ydist = Math.abs(player.ypos - food[j][1]);
+      if(xdist < player.size && ydist < player.size){ //if touching food
+        food[j] = [Math.random()*w, Math.random()*h]; //move food position
+        player.change_size(1);                        //increase player size
+      }
+    }
+  });
+}
+
+function update_players(){
+  Object.keys(users).forEach(function(key1) {
+    player1 = users[key1];
+    Object.keys(users).forEach(function(key2) {
+      player2 = users[key2];
+      if(player1.size > player2.size){  //eat other player if big and close enough
+        xdist = Math.abs(player1.xpos - player2.xpos);
+        ydist = Math.abs(player1.ypos - player2.ypos);
+        if(xdist < player1.size && ydist < player1.size){
+          player1.change_size(player2.size);
+          player2.reset();
+        }
+      }
+    });
+  });
+}
+
+function create_food(){
+  temp = [];
+  for(i = 0; i < 200; i++){
+    temp[i] = [Math.random()*w, Math.random()*h];
+  }
+  return temp;
+}

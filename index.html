@@ -5,85 +5,93 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Agar.io Copy</title>
+  <script defer src="http://localhost:3000/socket.io/socket.io.js"></script>
   <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
   <canvas id="myCanvas" width="1000" height="500" style="border:1px solid #d3d3d3;"></canvas>
   <script>
-  var socket = io();
+  document.addEventListener("DOMContentLoaded", start);
 
-  const name = prompt('What is your name?')
-  //appendMessage('You joined')
-  socket.emit('new-user', name)
+  function start(){
+    var local = true;   //Manage when running locally
+    var socket;
+    if(local){ socket = io('http://localhost:3000'); }
+    else{ socket = io(); }
 
-  var xspeed = 0;
-  var yspeed = 0;
-  var xcentre = window.innerWidth/2;
-  var ycentre = window.innerHeight/2;
+    const name = prompt('What is your name?')
+    socket.emit('new-user', name)
 
-  var c = document.getElementById("myCanvas");
-  var ctx = c.getContext("2d");
-  var col = 'rgb(' + Math.random()*255 + ',' + Math.random()*255 + ',' + Math.random()*255 + ')';
-  ctx.fillStyle = col;
+    var c = document.getElementById("myCanvas");
+    var ctx = c.getContext("2d");
+    var col = 'rgb(' + Math.random()*255 + ',' + Math.random()*255 + ',' + Math.random()*255 + ')';
+    ctx.fillStyle = col;
+    ctx.width = window.innerWidth;
+    ctx.height = window.innerHeight;
+    var xspeed = 0;
+    var yspeed = 0;
+    var xcentre = window.innerWidth/2;
+    var ycentre = window.innerHeight/2;
 
-  socket.on('update_game', users => {
-    size = Math.random()*6 - 3;
-    socket.emit('update_cell', {xpos: xspeed, ypos: yspeed, size: size})
+    socket.on('update_game', data => {
+      size = Math.random()*6 - 3;
+      socket.emit('update_cell', {xpos: xspeed, ypos: yspeed, size: size})
+      if(data.users != null)
+        redraw_game(data);
 
-    redraw_game(users);
-    console.log(1);
+      //appendMessage(`${data.name}: ${data.message}`);
+    })
 
-    //console.log(all(data.all));
-    //appendMessage(`${data.name}: ${data.message}`);
-  })
+    function redraw_game(data){
+      users = data.users;
+      food = data.food;
+      ctx.clearRect(0, 0, c.width, c.height);
 
-  document.onmousemove = handleMouseMove;   //tracking mouse position and movement direction
-  function handleMouseMove(event) {
-      var eventDoc, doc, body;
-      event = event || window.event;
-      if (event.pageX == null && event.clientX != null) {
-          eventDoc = (event.target && event.target.ownerDocument) || document;
-          doc = eventDoc.documentElement;
-          body = eventDoc.body;
+      food.forEach(function(item,i){              //Draw food
+        draw_circle(item[0], item[1], 5, '#33ccff');
+      });
 
-          event.pageX = event.clientX +
-            (doc && doc.scrollLeft || body && body.scrollLeft || 0) -
-            (doc && doc.clientLeft || body && body.clientLeft || 0);
-          event.pageY = event.clientY +
-            (doc && doc.scrollTop  || body && body.scrollTop  || 0) -
-            (doc && doc.clientTop  || body && body.clientTop  || 0 );
-      }
-      rise = xcentre - event.pageX;
-      run = ycentre - event.pageY;
-      angle = Math.atan2(rise, run) * (180 / Math.PI) + 90;
-      if (angle < 0) angle = 360 + angle;   //range now 0-360
-      xspeed = Math.cos(angle / (180 / Math.PI));
-      yspeed = Math.sin(angle / (180 / Math.PI));
-      //console.log(angle);
-      //console.log("x: " + xspeed);
-      //console.log("y: " + yspeed);
-  }
+      Object.keys(users).forEach(function(key) {  //Draw players
+        var player = users[key];
+        draw_circle(player.xpos, player.ypos, player.size, col);
+      });
+    }
 
-
-  function redraw_game(users){
-    ctx.clearRect(0, 0, c.width, c.height);
-
-    Object.keys(users).forEach(function(key) {
-      var player = users[key];
+    function draw_circle(x, y, size, c){
+      ctx.fillStyle = c;
       ctx.beginPath();
-      ctx.arc(player.xpos, player.ypos, player.size, 0, 2 * Math.PI, false);
+      ctx.arc(x, y, size, 0, 2 * Math.PI, false);
       ctx.fill();
-    });
-  }
-/*
-  socket.on('user-connected', name => {
-    appendMessage(`${name} connected`)
-  })
+    }
 
-  socket.on('user-disconnected', name => {
-    appendMessage(`${name} disconnected`)
-  })
-*/
+    document.onmousemove = handleMouseMove;   //tracking mouse position and movement direction
+    function handleMouseMove(event) {
+        var eventDoc, doc, body;
+        event = event || window.event;
+        if (event.pageX == null && event.clientX != null) {
+            eventDoc = (event.target && event.target.ownerDocument) || document;
+            doc = eventDoc.documentElement;
+            body = eventDoc.body;
+
+            event.pageX = event.clientX +
+              (doc && doc.scrollLeft || body && body.scrollLeft || 0) -
+              (doc && doc.clientLeft || body && body.clientLeft || 0);
+            event.pageY = event.clientY +
+              (doc && doc.scrollTop  || body && body.scrollTop  || 0) -
+              (doc && doc.clientTop  || body && body.clientTop  || 0 );
+        }
+        rise = xcentre - event.pageX;
+        run = ycentre - event.pageY;
+        angle = Math.atan2(rise, run) * (180 / Math.PI) + 90;
+        if (angle < 0) angle = 360 + angle;   //range now 0-360
+        xspeed = Math.cos(angle / (180 / Math.PI));
+        yspeed = Math.sin(angle / (180 / Math.PI));
+        //console.log(angle);
+        //console.log("x: " + xspeed);
+        //console.log("y: " + yspeed);
+    }
+  }
+
   </script>
 </body>
 </html>

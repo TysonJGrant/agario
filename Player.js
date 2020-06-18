@@ -12,6 +12,17 @@ class Player {
     if(this.size < 5)
       this.size = 5;
   }
+
+  change_size(x){
+    this.size += x;
+  }
+
+  reset(){
+    this.xpos = Math.random()*w;
+    this.ypos = Math.random()*h;
+    this.size = 20;
+  }
+
 }
 
 module.exports = Player;
