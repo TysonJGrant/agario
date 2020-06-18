@@ -3,7 +3,7 @@
 //add bots
 
 var Player = require('./Player.js');
-var local = false;
+var local = true;
 var io;
 
 if(local){  //Manage when running locally
@@ -40,8 +40,10 @@ io.on('connection', (socket) => {
   })
 
   socket.on('update_cell', data => {
-    if(users[socket.id] != null)
+    if(users[socket.id] != null){
       users[socket.id].update_position(data);
+      socket.emit('get_cell_data', users[socket.id])
+    }
   })
 
   socket.on('disconnect', () => {
@@ -56,7 +58,8 @@ function update_food(){
     for(j = 0; j < food.length; j++){
       xdist = Math.abs(player.xpos - food[j][0]);
       ydist = Math.abs(player.ypos - food[j][1]);
-      if(xdist < player.size && ydist < player.size){ //if touching food
+      dist = Math.sqrt( xdist * xdist + ydist * ydist );
+      if(dist < player.size){ //if touching food
         food[j] = [Math.random()*w, Math.random()*h]; //move food position
         player.change_size(1);                        //increase player size
       }

@@ -14,7 +14,7 @@
   document.addEventListener("DOMContentLoaded", start);
 
   function start(){
-    var local = false;   //Manage when running locally
+    var local = true;   //Manage when running locally
     var socket;
     if(local){ socket = io('http://localhost:3000'); }
     else{ socket = io(); }
@@ -24,10 +24,12 @@
 
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
-    var col = 'rgb(' + Math.random()*255 + ',' + Math.random()*255 + ',' + Math.random()*255 + ')';
-    ctx.fillStyle = col;
     ctx.width = window.innerWidth;
     ctx.height = window.innerHeight;
+    var mousex;
+    var mousey;
+    var xpos = 0;
+    var ypos = 0;
     var xspeed = 0;
     var yspeed = 0;
     var xcentre = window.innerWidth/2;
@@ -39,7 +41,20 @@
       if(data.users != null)
         redraw_game(data);
 
+      //rise = xcentre - event.pageX;
+      //run = ycentre - event.pageY;
+      rise = xpos - mousex;           //calculate travel velocity
+      run = ypos - mousey;
+      angle = Math.atan2(rise, run) * (180 / Math.PI) + 90;
+      if (angle < 0) angle = 360 + angle;   //range now 0-360
+      xspeed = Math.cos(angle / (180 / Math.PI));
+      yspeed = Math.sin(angle / (180 / Math.PI));
       //appendMessage(`${data.name}: ${data.message}`);
+    })
+
+    socket.on('get_cell_data', data => {
+      xpos = data.xpos;
+      ypos = data.ypos;
     })
 
     function redraw_game(data){
@@ -53,7 +68,7 @@
 
       Object.keys(users).forEach(function(key) {  //Draw players
         var player = users[key];
-        draw_circle(player.xpos, player.ypos, player.size, col);
+        draw_circle(player.xpos, player.ypos, player.size, player.col);
       });
     }
 
@@ -80,15 +95,8 @@
               (doc && doc.scrollTop  || body && body.scrollTop  || 0) -
               (doc && doc.clientTop  || body && body.clientTop  || 0 );
         }
-        rise = xcentre - event.pageX;
-        run = ycentre - event.pageY;
-        angle = Math.atan2(rise, run) * (180 / Math.PI) + 90;
-        if (angle < 0) angle = 360 + angle;   //range now 0-360
-        xspeed = Math.cos(angle / (180 / Math.PI));
-        yspeed = Math.sin(angle / (180 / Math.PI));
-        //console.log(angle);
-        //console.log("x: " + xspeed);
-        //console.log("y: " + yspeed);
+        mousex = event.pageX;
+        mousey = event.pageY;
     }
   }
 
