@@ -14,7 +14,7 @@
   document.addEventListener("DOMContentLoaded", start);
 
   function start(){
-    var local = true;   //Manage when running locally
+    var local = false;   //Manage when running locally
     var socket;
     if(local){ socket = io('http://localhost:3000'); }
     else{ socket = io(); }

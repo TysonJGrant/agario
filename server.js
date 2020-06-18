@@ -3,7 +3,7 @@
 //add bots
 
 var Player = require('./Player.js');
-var local = true;
+var local = false;
 var io;
 
 if(local){  //Manage when running locally
