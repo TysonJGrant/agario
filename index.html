@@ -36,8 +36,7 @@
     var ycentre = window.innerHeight/2;
 
     socket.on('update_game', data => {
-      size = Math.random()*6 - 3;
-      socket.emit('update_cell', {xpos: xspeed, ypos: yspeed, size: size})
+      socket.emit('update_cell', {xpos: xspeed, ypos: yspeed})
       if(data.users != null)
         redraw_game(data);
 
@@ -58,17 +57,19 @@
     })
 
     function redraw_game(data){
-      users = data.users;
       food = data.food;
+      users = data.users;
+      users = Object.keys(users).map(key => users[key]).sort(compare_size);  //Convert to sorted array
+      console.log(users[0].size);
       ctx.clearRect(0, 0, c.width, c.height);
 
       food.forEach(function(item,i){              //Draw food
         draw_circle(item[0], item[1], 5, '#33ccff');
       });
 
-      Object.keys(users).forEach(function(key) {  //Draw players
-        var player = users[key];
-        draw_circle(player.xpos, player.ypos, player.size, player.col);
+      users.forEach(function(player,i){   //Draw players
+        //put in order of size
+        draw_circle(player.xpos, player.ypos, player.radius, player.col);
       });
     }
 
@@ -77,6 +78,14 @@
       ctx.beginPath();
       ctx.arc(x, y, size, 0, 2 * Math.PI, false);
       ctx.fill();
+    }
+
+    function compare_size(a, b) {
+      if (a.size > b.size) {
+        return 1;
+      } else{
+        return -1;
+      }
     }
 
     document.onmousemove = handleMouseMove;   //tracking mouse position and movement direction

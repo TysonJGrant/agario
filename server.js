@@ -59,9 +59,9 @@ function update_food(){
       xdist = Math.abs(player.xpos - food[j][0]);
       ydist = Math.abs(player.ypos - food[j][1]);
       dist = Math.sqrt( xdist * xdist + ydist * ydist );
-      if(dist < player.size){ //if touching food
+      if(dist < player.radius){ //if touching food
         food[j] = [Math.random()*w, Math.random()*h]; //move food position
-        player.change_size(1);                        //increase player size
+        player.change_size(5);                        //increase player size
       }
     }
   });
@@ -75,7 +75,8 @@ function update_players(){
       if(player1.size > player2.size){  //eat other player if big and close enough
         xdist = Math.abs(player1.xpos - player2.xpos);
         ydist = Math.abs(player1.ypos - player2.ypos);
-        if(xdist < player1.size && ydist < player1.size){
+        dist = Math.sqrt( xdist * xdist + ydist * ydist );
+        if(dist < (player1.radius - player2.radius*9/10)){ //eat player when very close
           player1.change_size(player2.size);
           player2.reset();
         }
