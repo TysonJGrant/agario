@@ -59,8 +59,7 @@
     function redraw_game(data){
       food = data.food;
       users = data.users;
-      users = Object.keys(users).map(key => users[key]).sort(compare_size);  //Convert to sorted array
-      console.log(users[0].size);
+      users = Object.keys(users).sort(compare_size).map(key => users[key]);  //Convert to sorted array
       ctx.clearRect(0, 0, c.width, c.height);
 
       food.forEach(function(item,i){              //Draw food
