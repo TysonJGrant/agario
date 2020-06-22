@@ -28,8 +28,10 @@ else{
   const SCRIPT = './script.js';
 
   const server = express()
-    .use((req, res) => res.sendFile(__dirname + "/index.html")
-    .listen(PORT, () => console.log(`Listening on ${PORT}`));
+  server.get('/', function(req, res) {
+    res.sendFile(__dirname + "/index.html");
+  }
+  server.listen(PORT, () => console.log(`Listening on ${PORT}`));
   io = socketIO(server);
 }
 
