@@ -1,6 +1,17 @@
 //Add leadervoard
 //add food
-//add bots
+//add bots to pop cells. give some defence like shooting
+//    lose half size if hit. able to shoot back.
+//  move in straight line, pause and rotate, move in straight line.
+//  with different duration and speed and length
+//planets as cells
+//add resume page with embedded cv and add reference under
+//make rules for this game a dropdown and maybe with video showing play
+
+//zoom doesnt work properly. need to draw size based on cell size, not just hard coded
+
+var w = 4000;
+var h = 4000;
 
 var Player = require('./Player.js');
 var local = false;
@@ -21,8 +32,7 @@ else{
   io = socketIO(server);
 }
 
-const w = 1000;
-const h = 500;
+const food_pieces = 2000;
 const users = {};
 const bots = {};
 const food = create_food();
@@ -34,9 +44,10 @@ setInterval(function(){
 }, 50);
 
 io.on('connection', (socket) => {
-  socket.on('new-user', name => {
-    socket.broadcast.emit('user-connected', name);
-    users[socket.id] = new Player(w, h);
+  socket.on('new-user', cel => {
+    socket.broadcast.emit('user-connected', cel);
+    //users[socket.id] = new Player(w, h);
+    users[socket.id] = new Player(w, h, cel);
   })
 
   socket.on('update_cell', data => {
@@ -87,7 +98,7 @@ function update_players(){
 
 function create_food(){
   temp = [];
-  for(i = 0; i < 200; i++){
+  for(i = 0; i < food_pieces; i++){
     temp[i] = [Math.random()*w, Math.random()*h];
   }
   return temp;
