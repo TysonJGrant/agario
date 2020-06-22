@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Agar.io Copy</title>
-  <script defer src="http://localhost:3000/socket.io/socket.io.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <style>
     .score{
@@ -27,6 +26,8 @@
   <div id="score" class="score" style="left:5%;"></div>
   <div id="pos" class="score" style="left:85%;"></div>
   <script>
+  import images from './images';
+  import cells from './cells';
   var background = get_image("images/gamebg.png")
   var images = get_all_cell_images();
   console.log(images);

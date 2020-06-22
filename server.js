@@ -25,9 +25,13 @@ else{
   const socketIO = require('socket.io');
   const PORT = process.env.PORT || 3000;
   const INDEX = './index.html';
+  const IMAGES = './images';
+  const CELLS = './cells';
 
   const server = express()
     .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
+    .use((req, res) => res.sendFile(IMAGES, { root: __dirname }))
+    .use((req, res) => res.sendFile(CELLS, { root: __dirname }))
     .listen(PORT, () => console.log(`Listening on ${PORT}`));
   io = socketIO(server);
 }
