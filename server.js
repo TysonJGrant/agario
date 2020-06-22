@@ -30,7 +30,7 @@ else{
   const server = express()
   server.get('/', function(req, res) {
     res.sendFile(__dirname + "/index.html");
-  }
+  });
   server.listen(PORT, () => console.log(`Listening on ${PORT}`));
   io = socketIO(server);
 }
