@@ -28,6 +28,8 @@ else{
   const SCRIPT = './script.js';
 
   const app = express();
+  app.use(express.static('images'));
+  app.use(express.static('cells'));
   app.get('/', function(req, res) {
     res.sendFile(__dirname + '/index.html');
   });
