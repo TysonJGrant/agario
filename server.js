@@ -28,9 +28,8 @@ else{
   const SCRIPT = './script.js';
 
   const app = express();
-  app.use(express.static('images'));
-  app.use(express.static('cells'));
-  app.get('/', function(req, res) {
+  app.use(express.static('assets'));    //location of images, scripts etc
+  app.get('/', function(req, res) {     //main index page
     res.sendFile(__dirname + '/index.html');
   });
   const server = app.listen(PORT, () => console.log(`Listening on ${PORT}`));
