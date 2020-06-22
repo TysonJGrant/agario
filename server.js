@@ -29,9 +29,9 @@ else{
   const CELLS = './cells';
 
   const server = express()
-    .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
-    .use((req, res) => res.sendFile(IMAGES, { root: __dirname }))
-    .use((req, res) => res.sendFile(CELLS, { root: __dirname }))
+    .use((req, res) => res.sendFile(INDEX, { root: __dirname })
+                       res.sendFile(IMAGES, { root: __dirname })
+                       res.sendFile(CELLS, { root: __dirname }))
     .listen(PORT, () => console.log(`Listening on ${PORT}`));
   io = socketIO(server);
 }
