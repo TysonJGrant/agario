@@ -27,12 +27,12 @@ else{
   const INDEX = './index.html';
   const SCRIPT = './script.js';
 
-  const server = express()
+  const server = express();
   server.get('/', function(req, res) {
-    res.sendFile(__dirname + "/index.html");
+    res.sendFile(__dirname + '/index.html');
   });
   server.listen(PORT, () => console.log(`Listening on ${PORT}`));
-  io = socketIO(server);
+  //io = socketIO(server);
 }
 
 const food_pieces = 2000;
