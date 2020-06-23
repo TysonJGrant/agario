@@ -14,27 +14,20 @@ var w = 4000;
 var h = 4000;
 
 var Player = require('./Player.js');
-var local = false;
-var io;
 
-if(local){  //Manage when running locally
-  io = require('socket.io')(3000)  //for local
-}
-else{
-  const express = require('express');
-  const socketIO = require('socket.io');
-  const PORT = process.env.PORT || 3000;
-  const INDEX = './index.html';
-  const SCRIPT = './script.js';
+const express = require('express');
+const socketIO = require('socket.io');
+const PORT = process.env.PORT || 3000;
+const INDEX = './index.html';
+const SCRIPT = './script.js';
 
-  const app = express();
-  app.use(express.static('assets'));    //location of images, scripts etc
-  app.get('/', function(req, res) {     //main index page
-    res.sendFile(__dirname + '/index.html');
-  });
-  const server = app.listen(PORT, () => console.log(`Listening on ${PORT}`));
-  io = socketIO(server);
-}
+const app = express();
+app.use(express.static('assets'));    //location of images, scripts etc
+app.get('/', function(req, res) {     //main index page
+  res.sendFile(__dirname + '/index.html');
+});
+const server = app.listen(PORT, () => console.log(`Listening on ${PORT}`));
+var io = socketIO(server);
 
 const food_pieces = 2000;
 const users = {};
@@ -75,7 +68,7 @@ function update_food(){
       ydist = Math.abs(player.ypos - food[j][1]);
       dist = Math.sqrt( xdist * xdist + ydist * ydist );
       if(dist < player.radius){ //if touching food
-        food[j] = [Math.random()*w, Math.random()*h]; //move food position
+        food[j] = [(Math.random()*w).toFixed(2), (Math.random()*h).toFixed(2)]; //move food position
         player.change_size(5);                        //increase player size
       }
     }
@@ -103,7 +96,7 @@ function update_players(){
 function create_food(){
   temp = [];
   for(i = 0; i < food_pieces; i++){
-    temp[i] = [Math.random()*w, Math.random()*h];
+    temp[i] = [(Math.random()*w).toFixed(2), (Math.random()*h).toFixed(2)];
   }
   return temp;
 }
