@@ -21,7 +21,7 @@ class Player {
   }
 
   change_size(x){
-    this.size += 3;
+    this.size += 1;
     this.radius = Math.sqrt(this.size*10/Math.PI);
   }
 
