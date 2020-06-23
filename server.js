@@ -10,6 +10,8 @@
 
 //zoom doesnt work properly. need to draw size based on cell size, not just hard coded
 
+//food position isnt updating. size is though
+
 var w = 4000;
 var h = 4000;
 
@@ -71,7 +73,7 @@ function update_food(){
       if(dist < player.radius){ //if touching food
         food[j] = [(Math.random()*w).toFixed(2), (Math.random()*h).toFixed(2)]; //move food position
         player.change_size(5);                             //increase player size
-        //changed_food.push([j, food[j]]);    //only send food info when changed ([index, new xpos, new ypos])
+        changed_food.push([j, food[j]]);    //only send food info when changed ([index, new xpos, new ypos])
       }
     }
   });
