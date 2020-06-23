@@ -29,7 +29,7 @@ app.get('/', function(req, res) {     //main index page
 const server = app.listen(PORT, () => console.log(`Listening on ${PORT}`));
 var io = socketIO(server);
 
-const food_pieces = 2000;
+const food_pieces = 20;
 const users = {};
 const bots = {};
 const food = create_food();
