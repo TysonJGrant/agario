@@ -70,9 +70,9 @@ function update_food(){
       xdist = Math.abs(player.xpos - food[j][0]);
       ydist = Math.abs(player.ypos - food[j][1]);
       dist = Math.sqrt( xdist * xdist + ydist * ydist );
-      if(dist < player.radius){ //if touching food
+      if(dist < player.radius*5){ //if touching food
         food[j] = [(Math.random()*w).toFixed(2), (Math.random()*h).toFixed(2)]; //move food position
-        player.change_size(5);                             //increase player size
+        player.change_size(1);                             //increase player size
         changed_food.push([j, food[j]]);    //only send food info when changed ([index, new xpos, new ypos])
       }
     }
@@ -89,7 +89,7 @@ function update_players(){
         xdist = Math.abs(player1.xpos - player2.xpos);
         ydist = Math.abs(player1.ypos - player2.ypos);
         dist = Math.sqrt( xdist * xdist + ydist * ydist );
-        if(dist < (player1.radius - player2.radius*9/10)){ //eat player when very close
+        if(dist < (player1.radius - player2.radius*9/10)*5){ //eat player when very close
           player1.change_size(player2.size);
           player2.reset();
         }

@@ -1,7 +1,7 @@
 var background = get_image("images/gamebg.png")
 var images = get_all_cell_images();
-console.log(images);
-console.log(background);
+//console.log(images);
+//console.log(background);
 document.addEventListener("DOMContentLoaded", start);
 
 function start(){
@@ -50,7 +50,7 @@ function start(){
   })
 
   socket.on('update_food', changed_food => {
-    console.log(changed_food);
+    //console.log(changed_food);
     changed_food.forEach(function(item,i){            //Draw food
       food[item[0]] = item[1];                 //updates position of food that has been eaten
     });
@@ -70,7 +70,7 @@ function start(){
   })
 
   function redraw_game(data){
-    if(csize > 10000){ won = true; }   //win when big enough. do cool implode thing
+    if(csize > 2000){ won = true; }   //win when big enough. do cool implode thing
 
     ctx.clearRect(0, 0, c.width, c.height);
     ctx.save();
@@ -94,28 +94,31 @@ function start(){
     users.forEach(function(player,i){   //Draw players
       //put in order of size
       cel = images[player.image];
-      ctx.drawImage(cel, 0, 0, cel.width, cel.height, player.xpos-(player.radius*2/2), player.ypos-(player.radius*2/2), player.radius*2, player.radius*2);
+      ctx.drawImage(cel, 0, 0, cel.width, cel.height, player.xpos-(player.radius*10/2), player.ypos-(player.radius*10/2), player.radius*10, player.radius*10);
       //draw_circle(player.xpos, player.ypos, 10, player.col);
     });
     ctx.restore();        //reset the transform
 
-    //document.getElementById("score").innerHTML = ("SIZE: &nbsp&nbsp" + csize + "  scale: " + scale + "  scale_inc: " + scale_inc + "<br>GOAL: 10000");
+    //document.getElementById("score").innerHTML = ("SIZE: &nbsp&nbsp" + csize + "  scale: " + scale + "  scale_inc: " + scale_inc + "<br>GOAL: 2000");
     document.getElementById("score").innerHTML = ("SIZE: &nbsp&nbsp" + csize + "<br>GOAL: 10000");
     document.getElementById("pos").innerHTML = ("XPOS: " + parseInt(xpos) + "<br>YPOS: " + parseInt(ypos));
     if(won){
       scale = -1; //displaye win or lose and do invert explode thing. add start again button
     }
     else {
-      scale = 40/cradius;//something about size
-      scale_inc = scale;
+      scale = (5+cradius/5)/cradius;//something about size
+      if(scale > 2)
+        scale = 1.5;
+      //scale_inc = scale;
     }
-    if(Math.abs(scale_inc - scale) < 0.01)         //smooth out size changes
+    grow_amount = scale/200;
+    if(Math.abs(scale_inc - scale) < grow_amount)         //smooth out size changes
       scale_inc = scale;
     else if(scale_inc > scale){
-      scale_inc-=0.01;
+      scale_inc-=grow_amount;
     }
     else{
-      scale_inc+=0.01;
+      scale_inc+=grow_amount;
     }
   }
 
