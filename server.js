@@ -29,7 +29,7 @@ app.get('/', function(req, res) {     //main index page
 const server = app.listen(PORT, () => console.log(`Listening on ${PORT}`));
 var io = socketIO(server);
 
-const food_pieces = 20;
+const food_pieces = 2000;
 const users = {};
 const bots = {};
 const food = create_food();
@@ -37,12 +37,12 @@ const food = create_food();
 setInterval(function(){
   update_food();
   update_players();
-  io.sockets.emit('update_game', {users: users, food: food})
+  io.sockets.emit('update_game', {users: users});
 }, 50);
 
 io.on('connection', (socket) => {
   socket.on('new-user', cel => {
-    socket.broadcast.emit('user-connected', cel);
+    socket.emit('get_game_data', food);
     //users[socket.id] = new Player(w, h);
     users[socket.id] = new Player(w, h, cel);
   })
@@ -50,7 +50,7 @@ io.on('connection', (socket) => {
   socket.on('update_cell', data => {
     if(users[socket.id] != null){
       users[socket.id].update_position(data);
-      socket.emit('get_cell_data', users[socket.id])
+      socket.emit('get_self_data', users[socket.id])
     }
   })
 
@@ -61,6 +61,7 @@ io.on('connection', (socket) => {
 })
 
 function update_food(){
+  changed_food = [];
   Object.keys(users).forEach(function(key) {
     player = users[key];
     for(j = 0; j < food.length; j++){
@@ -69,10 +70,12 @@ function update_food(){
       dist = Math.sqrt( xdist * xdist + ydist * ydist );
       if(dist < player.radius){ //if touching food
         food[j] = [(Math.random()*w).toFixed(2), (Math.random()*h).toFixed(2)]; //move food position
-        player.change_size(5);                        //increase player size
+        player.change_size(5);                             //increase player size
+        //changed_food.push([j, food[j]]);    //only send food info when changed ([index, new xpos, new ypos])
       }
     }
   });
+  io.sockets.emit('update_food', changed_food);
 }
 
 function update_players(){

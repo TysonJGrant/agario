@@ -31,6 +31,7 @@ function start(){
   var scale = 1;
   var scale_inc = 1;
   var won = false;
+  var food = [];
 
   socket.on('update_game', data => {
     socket.emit('update_cell', {xpos: xspeed, ypos: yspeed})
@@ -48,13 +49,24 @@ function start(){
     //appendMessage(`${data.name}: ${data.message}`);
   })
 
-  socket.on('get_cell_data', data => {
+  socket.on('update_food', changed_food => {
+    console.log(changed_food);
+    changed_food.forEach(function(item,i){            //Draw food
+      food[item[0]] = item[1];                 //updates position of food that has been eaten
+    });
+  })
+
+  socket.on('get_self_data', data => {
     xpos = data.xpos;
     ypos = data.ypos;
     csize = data.size;
     cradius = data.radius;
     xoffset = xcentre - xpos*scale_inc;
     yoffset = ycentre - ypos*scale_inc;
+  })
+
+  socket.on('get_game_data', food_pos => {    //called when user enters and gets current food positions
+    food = food_pos;
   })
 
   function redraw_game(data){
@@ -64,11 +76,10 @@ function start(){
     ctx.save();
     ctx.translate(xoffset, yoffset);      //Draw with player in centre of screen
     ctx.scale(scale_inc, scale_inc);
-    food = data.food;
     users = data.users;
     users = Object.keys(users).map(key => users[key]).sort(compare_size);  //Convert to sorted array
 
-    //draw_background();
+    draw_background();
 
     ctx.strokeStyle = "#555555";
     ctx.lineWidth = 10;
@@ -77,7 +88,6 @@ function start(){
     ctx.stroke();
 
     food.forEach(function(item,i){              //Draw food
-      //draw_circle(item[0], item[1], 5, '#33ccff');
       draw_circle(item[0], item[1], 5, '#fccd12');
     });
 
