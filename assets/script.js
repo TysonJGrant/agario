@@ -1,40 +1,39 @@
 var background = get_image("images/gamebg.png")
 var images = get_all_cell_images();
-//console.log(images);
-//console.log(background);
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+c.width = window.innerWidth;
+c.height = window.innerHeight;
+
+var mousex;
+var mousey;
+var csize = 0;
+var cradius = 0;
+var xpos = 0;
+var ypos = 0;
+var xspeed = 0;
+var yspeed = 0;
+var xoffset = 0;
+var yoffset = 0;
+var xcentre = window.innerWidth/2;
+var ycentre = window.innerHeight/2;
+var scale = 1;
+var scale_inc = 1;
+var won = false;
+var food = [];
+var split = false;
+var socket;
+
 document.addEventListener("DOMContentLoaded", start);
 
 function start(){
-  var socket;
   socket = io();
 
   //const name = prompt('What is your name?')
   socket.emit('new-user',  Math.floor(Math.random()*25));
 
-  var c = document.getElementById("myCanvas");
-  var ctx = c.getContext("2d");
-  c.width = window.innerWidth;
-  c.height = window.innerHeight;
-
-  var mousex;
-  var mousey;
-  var csize = 0;
-  var cradius = 0;
-  var xpos = 0;
-  var ypos = 0;
-  var xspeed = 0;
-  var yspeed = 0;
-  var xoffset = 0;
-  var yoffset = 0;
-  var xcentre = window.innerWidth/2;
-  var ycentre = window.innerHeight/2;
-  var scale = 1;
-  var scale_inc = 1;
-  var won = false;
-  var food = [];
-
   socket.on('update_game', data => {
-    socket.emit('update_cell', {xpos: xspeed, ypos: yspeed})
+    socket.emit('update_cell', {xspeed: xspeed, yspeed: yspeed})
     if(data.users != null)
       redraw_game(data);
 
@@ -56,11 +55,20 @@ function start(){
     });
   })
 
-  socket.on('get_self_data', data => {
-    xpos = data.xpos;
-    ypos = data.ypos;
-    csize = data.size;
-    cradius = data.radius;
+  socket.on('get_self_data', data => {      //get self data to calculate 'camera' position and zoom
+    player = data.segments;
+    xpos = 0;
+    ypos = 0;
+    csize = 0;
+    //console.log(player);
+    for(i = 0; i < player.length; i++){
+      xpos += player[i].xpos;
+      ypos += player[i].ypos;
+      csize += player[i].size;
+    }
+    xpos = xpos/player.length;               //average of x and y segment positions
+    ypos = ypos/player.length;
+    cradius = Math.sqrt(csize*10/Math.PI);  //radius based on collective size and number of segments
     xoffset = xcentre - xpos*scale_inc;
     yoffset = ycentre - ypos*scale_inc;
   })
@@ -76,8 +84,15 @@ function start(){
     ctx.save();
     ctx.translate(xoffset, yoffset);      //Draw with player in centre of screen
     ctx.scale(scale_inc, scale_inc);
-    users = data.users;
-    users = Object.keys(users).map(key => users[key]).sort(compare_size);  //Convert to sorted array
+    temp = data.users;
+    users = [];           //Stores all segments of all players
+    Object.keys(temp).forEach(function(key) {
+      segments = temp[key].segments;          //Get cell as array of segments
+      for(i = 0; i < segments.length; i++){
+        users.push(segments[i]);
+      }
+    });
+    users.sort(compare_size);     //Convert to sorted array by segment size
 
     draw_background();
 
@@ -91,10 +106,10 @@ function start(){
       draw_circle(item[0], item[1], 5, '#fccd12');
     });
 
-    users.forEach(function(player,i){   //Draw players
+    users.forEach(function(segment,i){   //Draw players
       //put in order of size
-      cel = images[player.image];
-      ctx.drawImage(cel, 0, 0, cel.width, cel.height, player.xpos-(player.radius*10/2), player.ypos-(player.radius*10/2), player.radius*10, player.radius*10);
+      cel = images[segment.image];
+      ctx.drawImage(cel, 0, 0, cel.width, cel.height, segment.xpos-(segment.radius*10/2), segment.ypos-(segment.radius*10/2), segment.radius*10, segment.radius*10);
       //draw_circle(player.xpos, player.ypos, 10, player.col);
     });
     ctx.restore();        //reset the transform
@@ -169,6 +184,21 @@ function start(){
       mousex = event.pageX;
       mousey = event.pageY;
   }
+}
+
+document.body.onkeydown = function(e){
+    if(e.keyCode == 32 && csize >= 50){
+      if(!split){
+        socket.emit('split_cells', {xspeed: xspeed, yspeed: yspeed})
+      }
+      split = true;
+    }
+}
+
+document.body.onkeyup = function(e){
+    if(e.keyCode == 32){
+        split = false;;
+    }
 }
 
 function get_all_cell_images(){

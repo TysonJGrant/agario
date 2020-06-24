@@ -12,6 +12,10 @@
 
 //food position isnt updating. size is though
 
+//fix zoom based on number of pieces
+
+//add button to remove background if running slow
+
 var w = 4000;
 var h = 4000;
 
@@ -56,6 +60,12 @@ io.on('connection', (socket) => {
     }
   })
 
+  socket.on('split_cells', data => {
+    if(users[socket.id] != null){
+      users[socket.id].split_cells(data);
+    }
+  })
+
   socket.on('disconnect', () => {
     socket.broadcast.emit('user-disconnected', users[socket.id])
     delete users[socket.id]
@@ -67,12 +77,8 @@ function update_food(){
   Object.keys(users).forEach(function(key) {
     player = users[key];
     for(j = 0; j < food.length; j++){
-      xdist = Math.abs(player.xpos - food[j][0]);
-      ydist = Math.abs(player.ypos - food[j][1]);
-      dist = Math.sqrt( xdist * xdist + ydist * ydist );
-      if(dist < player.radius*5){ //if touching food
+      if(player.food_eaten(food[j])){
         food[j] = [(Math.random()*w).toFixed(2), (Math.random()*h).toFixed(2)]; //move food position
-        player.change_size(1);                             //increase player size
         changed_food.push([j, food[j]]);    //only send food info when changed ([index, new xpos, new ypos])
       }
     }
@@ -85,15 +91,7 @@ function update_players(){
     player1 = users[key1];
     Object.keys(users).forEach(function(key2) {
       player2 = users[key2];
-      if(player1.size > player2.size){  //eat other player if big and close enough
-        xdist = Math.abs(player1.xpos - player2.xpos);
-        ydist = Math.abs(player1.ypos - player2.ypos);
-        dist = Math.sqrt( xdist * xdist + ydist * ydist );
-        if(dist < (player1.radius - player2.radius*9/10)*5){ //eat player when very close
-          player1.change_size(player2.size);
-          player2.reset();
-        }
-      }
+      player1.eat_player(player2);
     });
   });
 }
