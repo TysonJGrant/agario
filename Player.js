@@ -24,15 +24,23 @@ class Player {
         current.change_size(1);               //increase player size
         return true;
       }
-      return false;
     }
+    return false;
   }
 
-  split_cells(directions){
+  split_cells(mouse_pos){
     for(this.i = this.segments.length-1; this.i >= 0; this.i--){
       let current = this.segments[this.i];
       if(current.size >= 50){
-        this.segments.push(new Segment(this.w, this.h, current.xpos, current.ypos, Math.floor(current.size/2), [(4 + current.size/200), directions.xspeed, directions.yspeed], this.image))
+        console.log(mouse_pos);
+        let vel = -((10 - Math.log(current.size*5))/5);
+        let rise = mouse_pos[0] - current.xpos;
+        let run = mouse_pos[1] - current.ypos;
+        let angle = Math.atan2(rise, run) * (180 / Math.PI) + 90;
+        if (angle < 0) angle = 360 + angle;   //range now 0-360
+        let xspeed = -Math.cos(angle / (180 / Math.PI));
+        let yspeed = -Math.sin(angle / (180 / Math.PI));
+        this.segments.push(new Segment(this.w, this.h, current.xpos, current.ypos, Math.floor(current.size/2), [(4 + current.size/200), xspeed, yspeed], this.image))
         current.change_size(-Math.ceil(current.size/2));
       }
     }
@@ -46,8 +54,8 @@ class Player {
         if(current.size > other.size){  //eat other player cell if big and close enough
           let xdist = Math.abs(current.xpos - other.xpos);
           let ydist = Math.abs(current.ypos - other.ypos);
-          let dist = Math.sqrt( xdist * xdist + ydist * ydist );
-          if(dist < (current.radius - other.radius*3/4)*5){ //eat player when very close
+          let dist = Math.sqrt( xdist * xdist + ydist * ydist )/5;
+          if(dist < (current.radius - other.radius*(3/4))){ //eat player when very close
             current.change_size(other.size);
             other_player.eaten(this.j);
           }

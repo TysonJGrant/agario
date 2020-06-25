@@ -11,8 +11,7 @@ var csize = 0;
 var cradius = 0;
 var xpos = 0;
 var ypos = 0;
-var xspeed = 0;
-var yspeed = 0;
+var mouse_pos = [];
 var xoffset = 0;
 var yoffset = 0;
 var xcentre = window.innerWidth/2;
@@ -34,21 +33,10 @@ function start(){
   socket.emit('new-user',  Math.floor(Math.random()*25));
 
   socket.on('update_game', data => {
-    let mouse_pos = [xpos + (mousex - xcentre)/scale_inc, ypos + (mousey - ycentre)/scale_inc];
-    console.log(mouse_pos);
+    mouse_pos = [xpos + (mousex - xcentre)/scale_inc, ypos + (mousey - ycentre)/scale_inc];
     socket.emit('update_cell', mouse_pos)
     if(data.users != null)
       redraw_game(data);
-
-    rise = xcentre - mousex;
-    run = ycentre - mousey;
-    //rise = xpos - mousex;           //calculate travel velocity
-    //run = ypos - mousey;
-    angle = Math.atan2(rise, run) * (180 / Math.PI) + 90;
-    if (angle < 0) angle = 360 + angle;   //range now 0-360
-    xspeed = Math.cos(angle / (180 / Math.PI));
-    yspeed = Math.sin(angle / (180 / Math.PI));
-    //appendMessage(`${data.name}: ${data.message}`);
   })
 
   socket.on('update_food', changed_food => {
@@ -192,7 +180,8 @@ function start(){
 document.body.onkeydown = function(e){
     if(e.keyCode == 32 && csize >= 50){
       if(!split){
-        socket.emit('split_cells', {xspeed: xspeed, yspeed: yspeed})
+        console.log(mouse_pos);
+        socket.emit('split_cells', mouse_pos)
       }
       split = true;
     }

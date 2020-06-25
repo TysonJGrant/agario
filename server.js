@@ -16,6 +16,12 @@
 
 //add button to remove background if running slow
 
+//only one segment eating food
+
+//splitting still goes in identical directions at first
+
+//zoom in out too fast. change multiplier
+
 var w = 4000;
 var h = 4000;
 
@@ -60,9 +66,9 @@ io.on('connection', (socket) => {
     }
   })
 
-  socket.on('split_cells', data => {
+  socket.on('split_cells', mouse_pos => {
     if(users[socket.id] != null){
-      users[socket.id].split_cells(data);
+      users[socket.id].split_cells(mouse_pos);
     }
   })
 
