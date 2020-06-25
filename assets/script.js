@@ -23,7 +23,7 @@ var food = [];
 var split = false;
 var bg_on = true;
 var socket;
-
+var mobile = (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
 document.addEventListener("DOMContentLoaded", start);
 
 function start(){
@@ -85,7 +85,7 @@ function start(){
     });
     users.sort(compare_size);     //Convert to sorted array by segment size
 
-    if(bg_on) draw_background();
+    if(bg_on && !mobile) draw_background();
 
     ctx.strokeStyle = "#555555";
     ctx.lineWidth = 10;
@@ -109,22 +109,24 @@ function start(){
     document.getElementById("score").innerHTML = ("SIZE: &nbsp&nbsp" + csize + "<br>GOAL: 1000");
     document.getElementById("pos").innerHTML = ("XPOS: " + parseInt(xpos) + "<br>YPOS: " + parseInt(ypos));
     if(won){
-      scale = -1; //displaye win or lose and do invert explode thing. add start again button
+      scale_inc -= 0.002; //displaye win or lose and do invert explode thing. add start again button
     }
     else {
       scale = (5+cradius/5)/cradius;//something about size
-      if(scale > 2)
+      if(scale > 2) {
         scale = 1.5;
-      //scale_inc = scale;
-    }
-    grow_amount = scale/200;
-    if(Math.abs(scale_inc - scale) < grow_amount)         //smooth out size changes
-      scale_inc = scale;
-    else if(scale_inc > scale){
-      scale_inc-=grow_amount;
-    }
-    else{
-      scale_inc+=grow_amount;
+      }
+      else{
+        grow_amount = scale/200;
+        if(Math.abs(scale_inc - scale) < grow_amount)         //smooth out size changes
+          scale_inc = scale;
+        else if(scale_inc > scale){
+          scale_inc-=grow_amount;
+        }
+        else{
+          scale_inc+=grow_amount;
+        }
+      }
     }
   }
 

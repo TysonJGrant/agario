@@ -31,8 +31,7 @@ class Player {
   split_cells(mouse_pos){
     for(this.i = this.segments.length-1; this.i >= 0; this.i--){
       let current = this.segments[this.i];
-      if(current.size >= 50){
-        console.log(mouse_pos);
+      if(current.size >= 50 && this.segments.length < 16){
         let vel = -((10 - Math.log(current.size*5))/5);
         let rise = mouse_pos[0] - current.xpos;
         let run = mouse_pos[1] - current.ypos;
