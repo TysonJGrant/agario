@@ -8,9 +8,9 @@ class Player {
     this.segments = [new Segment(w, h, Math.random()*(w-100)+50, Math.random()*(h-100)+50, 10, [1, 1, 1], cel)];
   }
 
-  update_position(data){
+  update_position(mouse_pos){
     for(this.i = 0; this.i < this.segments.length; this.i++){
-      this.segments[this.i].update_position(data);
+      this.segments[this.i].update_position(mouse_pos);
     }
   }
 
@@ -31,8 +31,10 @@ class Player {
   split_cells(directions){
     for(this.i = this.segments.length-1; this.i >= 0; this.i--){
       let current = this.segments[this.i];
-      this.segments.push(new Segment(this.w, this.h, current.xpos, current.ypos, Math.floor(current.size/2), [2.5, directions.xspeed, directions.yspeed], this.image))
-      current.change_size(-Math.ceil(current.size/2));
+      if(current.size >= 50){
+        this.segments.push(new Segment(this.w, this.h, current.xpos, current.ypos, Math.floor(current.size/2), [(4 + current.size/200), directions.xspeed, directions.yspeed], this.image))
+        current.change_size(-Math.ceil(current.size/2));
+      }
     }
   }
 
@@ -57,7 +59,7 @@ class Player {
   eaten(index){
     this.segments.splice(index, 1);     //Remove one element at index
     if(this.segments.length == 0)       //reset
-      this.segments = [new Segment(this.w, this.h, Math.random()*(this.w-100)+50, Math.random()*(this.h-100)+50, 10, 1, this.cel)];
+      this.segments = [new Segment(this.w, this.h, Math.random()*(this.w-100)+50, Math.random()*(this.h-100)+50, 10, [1, 1, 1], this.image)];
   }
 }
 

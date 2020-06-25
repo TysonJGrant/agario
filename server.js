@@ -53,9 +53,9 @@ io.on('connection', (socket) => {
     users[socket.id] = new Player(w, h, cel);
   })
 
-  socket.on('update_cell', data => {
+  socket.on('update_cell', mouse_pos => {
     if(users[socket.id] != null){
-      users[socket.id].update_position(data);
+      users[socket.id].update_position(mouse_pos);
       socket.emit('get_self_data', users[socket.id])
     }
   })

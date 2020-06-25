@@ -22,6 +22,7 @@ var scale_inc = 1;
 var won = false;
 var food = [];
 var split = false;
+var bg_on = true;
 var socket;
 
 document.addEventListener("DOMContentLoaded", start);
@@ -33,7 +34,9 @@ function start(){
   socket.emit('new-user',  Math.floor(Math.random()*25));
 
   socket.on('update_game', data => {
-    socket.emit('update_cell', {xspeed: xspeed, yspeed: yspeed})
+    let mouse_pos = [xpos + (mousex - xcentre)/scale_inc, ypos + (mousey - ycentre)/scale_inc];
+    console.log(mouse_pos);
+    socket.emit('update_cell', mouse_pos)
     if(data.users != null)
       redraw_game(data);
 
@@ -78,7 +81,7 @@ function start(){
   })
 
   function redraw_game(data){
-    if(csize > 2000){ won = true; }   //win when big enough. do cool implode thing
+    if(csize > 1000){ won = true; }   //win when big enough. do cool implode thing
 
     ctx.clearRect(0, 0, c.width, c.height);
     ctx.save();
@@ -94,7 +97,7 @@ function start(){
     });
     users.sort(compare_size);     //Convert to sorted array by segment size
 
-    draw_background();
+    if(bg_on) draw_background();
 
     ctx.strokeStyle = "#555555";
     ctx.lineWidth = 10;
@@ -105,17 +108,17 @@ function start(){
     food.forEach(function(item,i){              //Draw food
       draw_circle(item[0], item[1], 5, '#fccd12');
     });
-
     users.forEach(function(segment,i){   //Draw players
-      //put in order of size
-      cel = images[segment.image];
-      ctx.drawImage(cel, 0, 0, cel.width, cel.height, segment.xpos-(segment.radius*10/2), segment.ypos-(segment.radius*10/2), segment.radius*10, segment.radius*10);
-      //draw_circle(player.xpos, player.ypos, 10, player.col);
+      if(segment != null){
+        cel = images[segment.image];
+        ctx.drawImage(cel, 0, 0, cel.width, cel.height, segment.xpos-(segment.radius*10/2), segment.ypos-(segment.radius*10/2), segment.radius*10, segment.radius*10);
+        //draw_circle(player.xpos, player.ypos, 10, player.col);
+      }
     });
     ctx.restore();        //reset the transform
 
     //document.getElementById("score").innerHTML = ("SIZE: &nbsp&nbsp" + csize + "  scale: " + scale + "  scale_inc: " + scale_inc + "<br>GOAL: 2000");
-    document.getElementById("score").innerHTML = ("SIZE: &nbsp&nbsp" + csize + "<br>GOAL: 10000");
+    document.getElementById("score").innerHTML = ("SIZE: &nbsp&nbsp" + csize + "<br>GOAL: 1000");
     document.getElementById("pos").innerHTML = ("XPOS: " + parseInt(xpos) + "<br>YPOS: " + parseInt(ypos));
     if(won){
       scale = -1; //displaye win or lose and do invert explode thing. add start again button
@@ -192,6 +195,9 @@ document.body.onkeydown = function(e){
         socket.emit('split_cells', {xspeed: xspeed, yspeed: yspeed})
       }
       split = true;
+    }
+    else if(e.keyCode == 66){     //Remove background if laggy
+      bg_on = (bg_on) ? false : true;
     }
 }
 
