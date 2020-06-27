@@ -62,7 +62,7 @@ class Player {
         let yspeed = -Math.sin(angle / (180 / Math.PI));
         let xp = current.xpos + xspeed*current.radius*3;
         let yp = current.ypos - yspeed*current.radius*3;
-        pels.push(new Pellet(this.w, this.h, xp, yp, [(4 + current.size/200), xspeed, yspeed]))
+        pels.push(new Pellet(this.w, this.h, xp, yp, [3.5, xspeed, yspeed]))
         current.change_size(-10);
       }
     }
