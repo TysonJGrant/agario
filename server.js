@@ -22,10 +22,13 @@
 
 //zoom in out too fast. change multiplier
 
+//make splitting cells and pellets start further away from cell so doesnt eat instantly
+
 var w = 4000;
 var h = 4000;
 
 var Player = require('./Player.js');
+var Pellet = require('./Pellet.js');
 
 const express = require('express');
 const socketIO = require('socket.io');
@@ -42,14 +45,16 @@ const server = app.listen(PORT, () => console.log(`Listening on ${PORT}`));
 var io = socketIO(server);
 
 const food_pieces = 2000;
-const users = {};
-const bots = {};
-const food = create_food();
+var users = {};
+var bots = {};
+var food = create_food();
+var pellets = [];
 
 setInterval(function(){
   update_food();
   update_players();
-  io.sockets.emit('update_game', {users: users});
+  update_pellets();
+  io.sockets.emit('update_game', {users: users, pellets: pellets});
 }, 50);
 
 io.on('connection', (socket) => {
@@ -72,6 +77,12 @@ io.on('connection', (socket) => {
     }
   })
 
+  socket.on('shoot_pellet', mouse_pos => {
+    if(users[socket.id] != null){
+      pellets = pellets.concat(users[socket.id].shoot_pellets(mouse_pos));
+    }
+  })
+
   socket.on('disconnect', () => {
     socket.broadcast.emit('user-disconnected', users[socket.id])
     delete users[socket.id]
@@ -83,13 +94,26 @@ function update_food(){
   Object.keys(users).forEach(function(key) {
     player = users[key];
     for(j = 0; j < food.length; j++){
-      if(player.food_eaten(food[j])){
+      if(player.food_eaten(food[j], 1)){
         food[j] = [(Math.random()*w).toFixed(2), (Math.random()*h).toFixed(2)]; //move food position
         changed_food.push([j, food[j]]);    //only send food info when changed ([index, new xpos, new ypos])
       }
     }
   });
   io.sockets.emit('update_food', changed_food);
+}
+
+function update_pellets(){
+  Object.keys(users).forEach(function(key1) {
+    player = users[key1];
+    for(j = pellets.length-1; j >=0; j--){
+      pellets[j].update_position();
+      pellet_pos = [pellets[j].xpos, pellets[j].ypos];
+      if(player.food_eaten(pellet_pos, 10)){
+        pellets.splice(j, 1);     //Remove pellet if eaten
+      }
+    }
+  });
 }
 
 function update_players(){

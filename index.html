@@ -10,8 +10,20 @@
 </head>
 <body style="overflow: hidden; margin: 0px; background-image: url('images/pagebg.jpg'); background-size: cover">
   <canvas id="myCanvas" width=0% height=0%></canvas>
-  <div id="score" class="score" style="left:5%;"></div>
-  <div id="pos" class="score" style="left:85%;"></div>
+  <div id="hide_rules" class="score" style="left:5%; top:5%">HOW TO PLAY (R Key)</div>
+  <div id="show_rules" class="score" style="left:5%; top: 5%; display: none">
+    Grow as large as you can and avoid getting eaten by the other players<br>
+    <br>
+    Actions:<br>
+    [W] Shoot pellet to feed friendly players or deflect mines<br>
+    [SPACE] Split to chase smaller cells or escape larger ones<br>
+    <br>
+    [B] Toggle background (may increase performance if jumpy)<br>
+    [R] Toggle rules
+  </div>
+  <div id="players" class="score" style="left:85%; top:5%"></div>
+  <div id="score" class="score" style="left:5%; bottom: 5%;"></div>
+  <div id="pos" class="score" style="left:85%; bottom: 5%;"></div>
   <script src="script.js"></script>
 </body>
 </html>

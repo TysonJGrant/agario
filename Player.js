@@ -1,4 +1,5 @@
 var Segment = require('./Segment.js');
+var Pellet = require('./Pellet.js');
 
 class Player {
   constructor(w, h, cel) {
@@ -14,14 +15,14 @@ class Player {
     }
   }
 
-  food_eaten(food_pos){
+  food_eaten(food_pos, amount){
     for(this.i = 0; this.i < this.segments.length; this.i++){
       let current = this.segments[this.i];
       let xdist = Math.abs(current.xpos - food_pos[0]);
       let ydist = Math.abs(current.ypos - food_pos[1]);
       let dist = Math.sqrt( xdist * xdist + ydist * ydist );
       if(dist < current.radius*5){ //if touching food
-        current.change_size(1);               //increase player size
+        current.change_size(amount);               //increase player size
         return true;
       }
     }
@@ -39,10 +40,33 @@ class Player {
         if (angle < 0) angle = 360 + angle;   //range now 0-360
         let xspeed = -Math.cos(angle / (180 / Math.PI));
         let yspeed = -Math.sin(angle / (180 / Math.PI));
-        this.segments.push(new Segment(this.w, this.h, current.xpos, current.ypos, Math.floor(current.size/2), [(4 + current.size/200), xspeed, yspeed], this.image))
+        let xp = current.xpos + xspeed*current.radius*3;
+        let yp = current.ypos - yspeed*current.radius*3;
+        this.segments.push(new Segment(this.w, this.h, xp, yp, Math.floor(current.size/2), [(4 + current.size/200), xspeed, yspeed], this.image))
         current.change_size(-Math.ceil(current.size/2));
       }
     }
+  }
+
+  shoot_pellets(mouse_pos){
+    var pels = [];
+    for(this.i = this.segments.length-1; this.i >= 0; this.i--){
+      let current = this.segments[this.i];
+      if(current.size >= 20){
+        let vel = -((10 - Math.log(current.size*5))/5);
+        let rise = mouse_pos[0] - current.xpos;
+        let run = mouse_pos[1] - current.ypos;
+        let angle = Math.atan2(rise, run) * (180 / Math.PI) + 90;
+        if (angle < 0) angle = 360 + angle;   //range now 0-360
+        let xspeed = -Math.cos(angle / (180 / Math.PI));
+        let yspeed = -Math.sin(angle / (180 / Math.PI));
+        let xp = current.xpos + xspeed*current.radius*3;
+        let yp = current.ypos - yspeed*current.radius*3;
+        pels.push(new Pellet(this.w, this.h, xp, yp, [(4 + current.size/200), xspeed, yspeed]))
+        current.change_size(-10);
+      }
+    }
+    return pels;
   }
 
   eat_player(other_player){

@@ -20,8 +20,11 @@ var scale = 1;
 var scale_inc = 1;
 var won = false;
 var food = [];
+var pellets = [];
 var split = false;
 var bg_on = true;
+var players = 1;
+var show_rules = false;
 var socket;
 var mobile = (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
 document.addEventListener("DOMContentLoaded", start);
@@ -33,6 +36,7 @@ function start(){
   socket.emit('new-user',  Math.floor(Math.random()*25));
 
   socket.on('update_game', data => {
+    pellets = data.pellets;
     mouse_pos = [xpos + (mousex - xcentre)/scale_inc, ypos + (mousey - ycentre)/scale_inc];
     socket.emit('update_cell', mouse_pos)
     if(data.users != null)
@@ -76,8 +80,10 @@ function start(){
     ctx.translate(xoffset, yoffset);      //Draw with player in centre of screen
     ctx.scale(scale_inc, scale_inc);
     temp = data.users;
+    players = 0;
     users = [];           //Stores all segments of all players
     Object.keys(temp).forEach(function(key) {
+      players++;
       segments = temp[key].segments;          //Get cell as array of segments
       for(i = 0; i < segments.length; i++){
         users.push(segments[i]);
@@ -96,6 +102,12 @@ function start(){
     food.forEach(function(item,i){              //Draw food
       draw_circle(item[0], item[1], 5, '#fccd12');
     });
+
+    pellets.forEach(function(item,i){              //Draw pellets
+      draw_circle(item.xpos, item.ypos, 20, '#5555ff');
+      draw_circle(item.xpos, item.ypos, 15, '#33ccff');
+    });
+
     users.forEach(function(segment,i){   //Draw players
       if(segment != null){
         cel = images[segment.image];
@@ -106,6 +118,7 @@ function start(){
     ctx.restore();        //reset the transform
 
     //document.getElementById("score").innerHTML = ("SIZE: &nbsp&nbsp" + csize + "  scale: " + scale + "  scale_inc: " + scale_inc + "<br>GOAL: 2000");
+    document.getElementById("players").innerHTML = ("PLAYERS: " + players);
     document.getElementById("score").innerHTML = ("SIZE: &nbsp&nbsp" + csize + "<br>GOAL: 1000");
     document.getElementById("pos").innerHTML = ("XPOS: " + parseInt(xpos) + "<br>YPOS: " + parseInt(ypos));
     if(won){
@@ -182,10 +195,12 @@ function start(){
 document.body.onkeydown = function(e){
     if(e.keyCode == 32 && csize >= 50){
       if(!split){
-        console.log(mouse_pos);
         socket.emit('split_cells', mouse_pos)
       }
       split = true;
+    }
+    else if(e.keyCode == 87){     //Shoot new pellet
+      socket.emit('shoot_pellet', mouse_pos);
     }
     else if(e.keyCode == 66){     //Remove background if laggy
       bg_on = (bg_on) ? false : true;
@@ -195,6 +210,17 @@ document.body.onkeydown = function(e){
 document.body.onkeyup = function(e){
     if(e.keyCode == 32){
         split = false;;
+    }
+    else if(e.keyCode == 82){
+      show_rules = (show_rules) ? false : true;
+      if(show_rules){
+        document.getElementById("hide_rules").style.display = "none";
+        document.getElementById("show_rules").style.display = "block";
+      }
+      else{
+        document.getElementById("hide_rules").style.display = "block"
+        document.getElementById("show_rules").style.display = "none"
+      }
     }
 }
 
