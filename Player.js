@@ -60,8 +60,8 @@ class Player {
         if (angle < 0) angle = 360 + angle;   //range now 0-360
         let xspeed = -Math.cos(angle / (180 / Math.PI));
         let yspeed = -Math.sin(angle / (180 / Math.PI));
-        let xp = current.xpos + xspeed*current.radius*3;
-        let yp = current.ypos - yspeed*current.radius*3;
+        let xp = current.xpos + xspeed*current.radius*4.5;
+        let yp = current.ypos - yspeed*current.radius*4.5;
         pels.push(new Pellet(this.w, this.h, xp, yp, [3.5, xspeed, yspeed]))
         current.change_size(-10);
       }

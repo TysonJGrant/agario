@@ -73,7 +73,7 @@ function start(){
   })
 
   function redraw_game(data){
-    if(csize > 1000){ won = true; }   //win when big enough. do cool implode thing
+    if(csize > 2000){ won = true; }   //win when big enough. do cool implode thing
 
     ctx.clearRect(0, 0, c.width, c.height);
     ctx.save();
@@ -119,7 +119,7 @@ function start(){
 
     //document.getElementById("score").innerHTML = ("SIZE: &nbsp&nbsp" + csize + "  scale: " + scale + "  scale_inc: " + scale_inc + "<br>GOAL: 2000");
     document.getElementById("players").innerHTML = ("PLAYERS: " + players);
-    document.getElementById("score").innerHTML = ("SIZE: &nbsp&nbsp" + csize + "<br>GOAL: 1000");
+    document.getElementById("score").innerHTML = ("SIZE: &nbsp&nbsp" + csize + "<br>GOAL: 2000");
     document.getElementById("pos").innerHTML = ("XPOS: " + parseInt(xpos) + "<br>YPOS: " + parseInt(ypos));
     if(won){
       scale_inc -= 0.002; //displaye win or lose and do invert explode thing. add start again button
