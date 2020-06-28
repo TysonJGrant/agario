@@ -37,6 +37,7 @@ function start(){
 
   socket.on('update_game', data => {
     pellets = data.pellets;
+    mines = data.mines;
     mouse_pos = [xpos + (mousex - xcentre)/scale_inc, ypos + (mousey - ycentre)/scale_inc];
     socket.emit('update_cell', mouse_pos)
     if(data.users != null)
@@ -73,7 +74,7 @@ function start(){
   })
 
   function redraw_game(data){
-    if(csize > 2000){ won = true; }   //win when big enough. do cool implode thing
+    //if(csize > 2000){ won = true; }   //win when big enough. do cool implode thing
 
     ctx.clearRect(0, 0, c.width, c.height);
     ctx.save();
@@ -108,6 +109,11 @@ function start(){
       draw_circle(item.xpos, item.ypos, 15, '#33ccff');
     });
 
+    mines.forEach(function(item,i){              //Draw miness
+      draw_circle(item.xpos, item.ypos, 20, '#ff5555');
+      draw_circle(item.xpos, item.ypos, 15, '#ffcccc');
+    });
+
     users.forEach(function(segment,i){   //Draw players
       if(segment != null){
         cel = images[segment.image];
@@ -119,7 +125,7 @@ function start(){
 
     //document.getElementById("score").innerHTML = ("SIZE: &nbsp&nbsp" + csize + "  scale: " + scale + "  scale_inc: " + scale_inc + "<br>GOAL: 2000");
     document.getElementById("players").innerHTML = ("PLAYERS: " + players);
-    document.getElementById("score").innerHTML = ("SIZE: &nbsp&nbsp" + csize + "<br>GOAL: 2000");
+    document.getElementById("score").innerHTML = ("SIZE: &nbsp&nbsp" + csize); // + "<br>GOAL: 2000");
     document.getElementById("pos").innerHTML = ("XPOS: " + parseInt(xpos) + "<br>YPOS: " + parseInt(ypos));
     if(won){
       scale_inc -= 0.002; //displaye win or lose and do invert explode thing. add start again button

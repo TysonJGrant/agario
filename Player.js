@@ -29,6 +29,38 @@ class Player {
     return false;
   }
 
+  mine_eaten(mine_pos){
+    let max_pieces = 16 - this.segments.length;
+    for(this.i = this.segments.length-1; this.i >= 0; this.i--){
+      let current = this.segments[this.i];
+      if(current.size >= 25){
+        let xdist = Math.abs(current.xpos - mine_pos[0]);
+        let ydist = Math.abs(current.ypos - mine_pos[1]);
+        let dist = Math.sqrt( xdist * xdist + ydist * ydist );
+        if(dist < current.radius*5+10){ //if touching mine
+          let most_splits = Math.floor(current.size/25);
+          max_pieces = (most_splits < max_pieces) ? most_splits : max_pieces;   //Can only be 16 pieces max and each must be at least 25 size
+          let new_size = Math.floor(current.size/max_pieces);   //create new pieces at smaller size
+          for(this.j = max_pieces-1; this.j >= 0; this.j--){
+            this.create_exploded_cell(current.xpos, current.ypos, new_size, current.radius, (360/max_pieces)*this.j);
+          }
+          this.segments.splice(this.i, 1);  //remove exploded center piece
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  create_exploded_cell(xpos, ypos, size, radius, angle){
+    let vel = -((10 - Math.log(size*5))/5);
+    let xspeed = -Math.cos(angle / (180 / Math.PI));
+    let yspeed = -Math.sin(angle / (180 / Math.PI));
+    let xp = xpos + xspeed*radius*3;
+    let yp = ypos - yspeed*radius*3;
+    this.segments.push(new Segment(this.w, this.h, xp, yp, size, [(4 + size/200), xspeed, yspeed], this.image))
+  }
+
   split_cells(mouse_pos){
     for(this.i = this.segments.length-1; this.i >= 0; this.i--){
       let current = this.segments[this.i];

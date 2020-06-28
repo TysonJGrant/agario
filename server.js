@@ -29,6 +29,7 @@ var h = 4000;
 
 var Player = require('./Player.js');
 var Pellet = require('./Pellet.js');
+var Mine = require('./Mine.js');
 
 const express = require('express');
 const socketIO = require('socket.io');
@@ -45,16 +46,19 @@ const server = app.listen(PORT, () => console.log(`Listening on ${PORT}`));
 var io = socketIO(server);
 
 const food_pieces = 2000;
+const total_mines = 10;
 var users = {};
 var bots = {};
 var food = create_food();
 var pellets = [];
+var mines = create_mines();
 
 setInterval(function(){
   update_food();
   update_players();
   update_pellets();
-  io.sockets.emit('update_game', {users: users, pellets: pellets});
+  update_mines();
+  io.sockets.emit('update_game', {users: users, pellets: pellets, mines: mines});
 }, 50);
 
 io.on('connection', (socket) => {
@@ -103,6 +107,19 @@ function update_food(){
   io.sockets.emit('update_food', changed_food);
 }
 
+function update_mines(){
+  Object.keys(users).forEach(function(key1) {
+    player = users[key1];
+    for(j = mines.length-1; j >=0; j--){
+      mines[j].update_position();
+      mine_pos = [mines[j].xpos, mines[j].ypos];
+      if(player.mine_eaten(mine_pos)){
+        mines[j] = new Mine(w, h);
+      }
+    }
+  });
+}
+
 function update_pellets(){
   Object.keys(users).forEach(function(key1) {
     player = users[key1];
@@ -130,6 +147,14 @@ function create_food(){
   temp = [];
   for(i = 0; i < food_pieces; i++){
     temp[i] = [(Math.random()*w).toFixed(2), (Math.random()*h).toFixed(2)];
+  }
+  return temp;
+}
+
+function create_mines(){
+  temp = [];
+  for(i = 0; i < total_mines; i++){
+    temp[i] = new Mine(w, h);
   }
   return temp;
 }
