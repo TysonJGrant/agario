@@ -108,10 +108,12 @@ function update_food(){
 }
 
 function update_mines(){
+  for(j = mines.length-1; j >=0; j--){
+    mines[j].update_position();
+  }
   Object.keys(users).forEach(function(key1) {
     player = users[key1];
     for(j = mines.length-1; j >=0; j--){
-      mines[j].update_position();
       mine_pos = [mines[j].xpos, mines[j].ypos];
       if(player.mine_eaten(mine_pos)){
         mines[j] = new Mine(w, h);
@@ -121,10 +123,12 @@ function update_mines(){
 }
 
 function update_pellets(){
+  for(j = pellets.length-1; j >=0; j--){
+    pellets[j].update_position();
+  }
   Object.keys(users).forEach(function(key1) {
     player = users[key1];
     for(j = pellets.length-1; j >=0; j--){
-      pellets[j].update_position();
       pellet_pos = [pellets[j].xpos, pellets[j].ypos];
       if(player.food_eaten(pellet_pos, 10)){
         pellets.splice(j, 1);     //Remove pellet if eaten
