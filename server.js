@@ -108,9 +108,6 @@ function update_food(){
 }
 
 function update_mines(){
-  for(j = mines.length-1; j >=0; j--){
-    mines[j].update_position();
-  }
   Object.keys(users).forEach(function(key1) {
     player = users[key1];
     for(j = mines.length-1; j >=0; j--){
@@ -120,9 +117,19 @@ function update_mines(){
       }
     }
   });
+  for(j = mines.length-1; j >=0; j--){
+    mines[j].update_position();
+  }
 }
 
 function update_pellets(){
+  for(k = mines.length-1; k >=0; k--){    //deflect mines with pellets
+    for(j = pellets.length-1; j >=0; j--){
+      if(pellets[j].hit_mine(mines[k])){
+        pellets.splice(j, 1);  //remove if deflected mine
+      }
+    }
+  }
   for(j = pellets.length-1; j >=0; j--){
     pellets[j].update_position();
   }

@@ -34,6 +34,17 @@ class Pellet {
       }
     }
   }
+
+  hit_mine(mine){
+    let xdist = Math.abs(this.xpos - mine.xpos);
+    let ydist = Math.abs(this.ypos - mine.ypos);
+    let dist = Math.sqrt( xdist * xdist + ydist * ydist );
+    if(dist < 30){ //if touching mine
+      mine.redirect(this.accel);       //push mine away
+      return true;
+    }
+    return false;
+  }
 }
 
 module.exports = Pellet;

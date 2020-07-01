@@ -11,6 +11,8 @@ class Segment {
   }
 
   update_position(mouse_pos){
+    let loss = this.size/2000;
+    this.size -= loss;
     let vel = ((10 - Math.log(this.size*5))*2);
     if(this.accel[0] > 1){
       this.xpos += this.accel[1]*vel*this.accel[0];

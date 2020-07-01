@@ -125,7 +125,7 @@ function start(){
 
     //document.getElementById("score").innerHTML = ("SIZE: &nbsp&nbsp" + csize + "  scale: " + scale + "  scale_inc: " + scale_inc + "<br>GOAL: 2000");
     document.getElementById("players").innerHTML = ("PLAYERS: " + players);
-    document.getElementById("score").innerHTML = ("SIZE: &nbsp&nbsp" + csize); // + "<br>GOAL: 2000");
+    document.getElementById("score").innerHTML = ("SIZE: &nbsp&nbsp" + parseInt(csize)); // + "<br>GOAL: 2000");
     document.getElementById("pos").innerHTML = ("XPOS: " + parseInt(xpos) + "<br>YPOS: " + parseInt(ypos));
     if(won){
       scale_inc -= 0.002; //displaye win or lose and do invert explode thing. add start again button

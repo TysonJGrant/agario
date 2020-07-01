@@ -43,6 +43,12 @@ class Mine {
       this.angle = (this.angle += 3)%360;
     }
   }
+
+  redirect(acc){
+    this.move = true;
+    this.angle = Math.atan2(acc[2], acc[1]) * (180 / Math.PI) + 180;
+    if (this.angle < 0) this.angle = 360 + this.angle;   //range now 0-360
+  }
 }
 
 module.exports = Mine;
