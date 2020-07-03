@@ -1,29 +1,3 @@
-//Add leadervoard
-//add food
-//add bots to pop cells. give some defence like shooting
-//    lose half size if hit. able to shoot back.
-//  move in straight line, pause and rotate, move in straight line.
-//  with different duration and speed and length
-//planets as cells
-//add resume page with embedded cv and add reference under
-//make rules for this game a dropdown and maybe with video showing play
-
-//zoom doesnt work properly. need to draw size based on cell size, not just hard coded
-
-//food position isnt updating. size is though
-
-//fix zoom based on number of pieces
-
-//add button to remove background if running slow
-
-//only one segment eating food
-
-//splitting still goes in identical directions at first
-
-//zoom in out too fast. change multiplier
-
-//make splitting cells and pellets start further away from cell so doesnt eat instantly
-
 var w = 4000;
 var h = 4000;
 

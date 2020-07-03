@@ -42,7 +42,8 @@ git remote add origin https://github.com/Tyson3206792/agario.git - adds origin a
 git pull - update local files to reflect remote files
 
 ==in json file for node==
-"start-local": "nodemon server.js" - call to run server locally
 "start": "node app.js" -           - called by heroku to start running. can also call "node app.js" to run locally
+
+In the console, call 'npm run start' to call the function and start the server
 
 helpful - https://www.freecodecamp.org/news/how-to-deploy-a-nodejs-app-to-heroku-from-github-without-installing-heroku-on-your-machine-433bec770efe/
